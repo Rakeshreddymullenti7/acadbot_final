@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AcadBot — Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#050810;--surface:#0d1117;--surface2:#161b25;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--primary:#FF6B35;--text:#F0F4FF;--muted:#6B7490;--danger:#FF4466;--font:'Outfit',sans-serif;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);display:flex;align-items:center;justify-content:center;}
+    .cosmic-bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 50% 50%,rgba(255,107,53,0.08) 0%,transparent 60%);}
+    .grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(255,107,53,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,107,53,0.02) 1px,transparent 1px);background-size:50px 50px;}
+    .stars{position:fixed;inset:0;z-index:0;overflow:hidden;}
+    .star{position:absolute;background:white;border-radius:50%;animation:twinkle var(--dur,3s) ease-in-out infinite var(--delay,0s);}
+    @keyframes twinkle{0%,100%{opacity:0.1;}50%{opacity:0.7;}}
+    .box{position:relative;z-index:1;background:var(--surface);border:1px solid rgba(255,107,53,0.25);border-radius:28px;padding:52px 48px;width:100%;max-width:440px;box-shadow:0 0 80px rgba(255,107,53,0.12);}
+    .icon{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,rgba(255,107,53,0.2),rgba(255,107,53,0.05));border:1px solid rgba(255,107,53,0.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 28px;}
+    .title{font-size:30px;font-weight:800;text-align:center;margin-bottom:6px;}
+    .sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:36px;line-height:1.5;}
+    .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;font-weight:700;}
+    .input{width:100%;padding:14px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:18px;}
+    .input:focus{border-color:rgba(255,107,53,0.5);box-shadow:0 0 0 3px rgba(255,107,53,0.08);}
+    .btn{width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#FF6B35,#FFB800);color:white;font-family:var(--font);font-size:15px;font-weight:700;cursor:pointer;transition:transform 0.15s,opacity 0.15s;}
+    .btn:hover{transform:scale(1.02);opacity:0.9;}
+    .error{background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.2);color:#FF4466;font-size:13px;text-align:center;margin-top:14px;padding:10px 16px;border-radius:10px;}
+    .back{display:block;text-align:center;margin-top:22px;color:var(--muted);font-size:13px;text-decoration:none;transition:color 0.15s;}
+    .back:hover{color:var(--primary);}
+  </style>
+</head>
+<body>
+<div class="cosmic-bg"></div><div class="grid"></div>
+<div class="stars" id="stars"></div>
+<div class="box">
+  <div class="icon">⚙️</div>
+  <div class="title">Admin Portal</div>
+  <div class="sub">Enter your admin password to manage the system</div>
+  <form method="POST">
+    <div class="label">Admin Password</div>
+    <input type="password" name="password" class="input" placeholder="Enter admin password" autofocus/>
+    <button type="submit" class="btn">Access Admin Portal →</button>
+    {% if error %}<div class="error">❌ {{ error }}</div>{% endif %}
+  </form>
+  <a href="/" class="back">← Back to Portal Selection</a>
+</div>
+<script>
+const stars=document.getElementById('stars');
+for(let i=0;i<100;i++){const s=document.createElement('div');s.className='star';const size=Math.random()*2+1;s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${Math.random()*4+2}s;--delay:-${Math.random()*4}s;`;stars.appendChild(s);}
+</script>
+</body>
+</html>

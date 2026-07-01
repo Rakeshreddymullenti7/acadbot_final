@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AcadBot — KMEC Academic Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #050810;
+      --surface: #0d1117;
+      --surface2: #161b25;
+      --border: rgba(255,255,255,0.06);
+      --primary: #00D4FF;
+      --secondary: #7B2FFF;
+      --accent: #FF6B35;
+      --gold: #FFD700;
+      --text: #F0F4FF;
+      --muted: #6B7490;
+      --dim: #2A2F45;
+      --font: 'Outfit', sans-serif;
+      --mono: 'Space Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+    /* Animated cosmic background */
+    .cosmic-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,212,255,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(123,47,255,0.1) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 60% 30%, rgba(255,107,53,0.05) 0%, transparent 50%);
+    }
+
+    /* Stars */
+    .stars { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+    .star {
+      position: absolute; background: white; border-radius: 50%;
+      animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+    }
+    @keyframes twinkle { 0%,100% { opacity: 0.1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.5); } }
+
+    /* Grid overlay */
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .wrapper { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 60px; }
+
+    .logo-ring {
+      width: 90px; height: 90px; border-radius: 50%;
+      background: conic-gradient(var(--primary), var(--secondary), var(--accent), var(--primary));
+      padding: 3px; margin: 0 auto 24px; animation: spinSlow 8s linear infinite;
+      display: flex; align-items: center; justify-content: center;
+    }
+    @keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .logo-inner {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: var(--bg); display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+    }
+
+    .title {
+      font-size: clamp(42px, 8vw, 72px); font-weight: 900; line-height: 1;
+      background: linear-gradient(135deg, var(--primary) 0%, #fff 40%, var(--secondary) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -2px;
+    }
+    .title-version {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      font-size: 24px; font-weight: 700; margin-left: 8px; vertical-align: top; margin-top: 8px;
+    }
+    .subtitle {
+      font-size: 16px; color: var(--muted); margin-top: 12px; letter-spacing: 0.05em;
+      font-weight: 400;
+    }
+    .kmec-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);
+      padding: 6px 16px; border-radius: 20px; font-size: 12px;
+      color: var(--primary); margin-top: 16px; font-family: var(--mono);
+      letter-spacing: 0.1em;
+    }
+
+    /* Portal Cards */
+    .portals { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1000px; width: 100%; }
+
+    .portal-card {
+      position: relative; border-radius: 24px; padding: 40px 32px;
+      cursor: pointer; text-decoration: none; color: inherit;
+      overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .portal-card::before {
+      content: ''; position: absolute; inset: 0; border-radius: 24px;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .portal-card:hover { transform: translateY(-8px); }
+    .portal-card:hover::before { opacity: 1; }
+
+    /* Student card */
+    .card-student { background: linear-gradient(135deg, #0d1117 0%, #0d1a2e 100%); }
+    .card-student::before { background: radial-gradient(ellipse at top left, rgba(0,212,255,0.15), transparent 60%); }
+    .card-student:hover { box-shadow: 0 20px 60px rgba(0,212,255,0.2), 0 0 0 1px rgba(0,212,255,0.3); }
+    .card-student .card-accent { color: var(--primary); }
+    .card-student .card-glow { background: var(--primary); }
+
+    /* Teacher card */
+    .card-teacher { background: linear-gradient(135deg, #0d1117 0%, #1a0d2e 100%); }
+    .card-teacher::before { background: radial-gradient(ellipse at top left, rgba(123,47,255,0.15), transparent 60%); }
+    .card-teacher:hover { box-shadow: 0 20px 60px rgba(123,47,255,0.2), 0 0 0 1px rgba(123,47,255,0.3); }
+    .card-teacher .card-accent { color: #A855F7; }
+    .card-teacher .card-glow { background: #A855F7; }
+
+    /* Admin card */
+    .card-admin { background: linear-gradient(135deg, #0d1117 0%, #2e1a0d 100%); }
+    .card-admin::before { background: radial-gradient(ellipse at top left, rgba(255,107,53,0.15), transparent 60%); }
+    .card-admin:hover { box-shadow: 0 20px 60px rgba(255,107,53,0.2), 0 0 0 1px rgba(255,107,53,0.3); }
+    .card-admin .card-accent { color: var(--accent); }
+    .card-admin .card-glow { background: var(--accent); }
+
+    .card-glow {
+      position: absolute; top: -30px; right: -30px;
+      width: 120px; height: 120px; border-radius: 50%;
+      filter: blur(40px); opacity: 0.3;
+    }
+
+    .card-icon {
+      width: 64px; height: 64px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 24px; position: relative;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .card-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+    .card-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+
+    .card-features { list-style: none; margin-bottom: 32px; }
+    .card-features li {
+      font-size: 13px; color: var(--muted); padding: 6px 0;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-features li:last-child { border-bottom: none; }
+    .card-features li span { font-size: 14px; }
+
+    .card-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-radius: 12px;
+      font-size: 14px; font-weight: 600; font-family: var(--font);
+      border: none; cursor: pointer; width: 100%;
+      transition: all 0.2s ease;
+    }
+    .card-student .card-btn { background: rgba(0,212,255,0.15); color: var(--primary); border: 1px solid rgba(0,212,255,0.3); }
+    .card-teacher .card-btn { background: rgba(168,85,247,0.15); color: #A855F7; border: 1px solid rgba(168,85,247,0.3); }
+    .card-admin .card-btn { background: rgba(255,107,53,0.15); color: var(--accent); border: 1px solid rgba(255,107,53,0.3); }
+    .card-btn:hover { transform: scale(1.02); }
+    .card-btn .arrow { font-size: 18px; transition: transform 0.2s; }
+    .portal-card:hover .card-btn .arrow { transform: translateX(4px); }
+
+    /* Footer */
+    .footer { margin-top: 60px; text-align: center; color: var(--dim); font-size: 12px; font-family: var(--mono); }
+    .footer span { color: var(--muted); }
+
+    /* Floating particles */
+    .particle {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+      animation: floatUp var(--dur, 8s) ease-in-out infinite var(--delay, 0s);
+      opacity: 0;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.2; }
+      100% { transform: translateY(-100px) scale(1); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cosmic-bg"></div>
+<div class="grid-overlay"></div>
+<div class="stars" id="stars"></div>
+
+<div class="wrapper">
+  <div class="header">
+    <div class="logo-ring">
+      <div class="logo-inner">🎓</div>
+    </div>
+    <div class="title">AcadBot</div>
+    <div class="subtitle">AI-Powered Academic Assistant</div>
+    <div class="kmec-badge">
+      <span>⚡</span> KESHAVA MEMORIAL ENGINEERING COLLEGE
+    </div>
+  </div>
+
+  <div class="portals">
+
+    <!-- Student Portal -->
+    <a href="/student/login" class="portal-card card-student">
+      <div class="card-glow"></div>
+      <div class="card-icon">🎒</div>
+      <div class="card-title">Student</div>
+      <div class="card-desc">Access your results, attendance, SGPA & CGPA instantly through natural conversation.</div>
+      <ul class="card-features">
+        <li><span>📊</span> Semester-wise results & grades</li>
+        <li><span>🎓</span> SGPA & CGPA calculator</li>
+        <li><span>📅</span> Attendance tracker</li>
+        <li><span>⚡</span> Smart attendance calculator</li>
+        <li><span>🤖</span> AI chatbot interface</li>
+      </ul>
+      <button class="card-btn">Enter Student Portal <span class="arrow">→</span></button>
+    </a>
+
+    <!-- Teacher Portal -->
+    <a href="/teacher/login" class="portal-card card-teacher">
+      <div class="card-glow"></div>
+      <div class="card-icon">👨‍🏫</div>
+      <div class="card-title">Teacher</div>
+      <div class="card-desc">Monitor student performance, view class analytics and track academic progress.</div>
+      <ul class="card-features">
+        <li><span>👥</span> View any student's results</li>
+        <li><span>📈</span> Class performance analytics</li>
+        <li><span>⚠️</span> Low attendance alerts</li>
+        <li><span>🏆</span> Top performers list</li>
+        <li><span>📋</span> Subject-wise analysis</li>
+      </ul>
+      <button class="card-btn">Enter Teacher Portal <span class="arrow">→</span></button>
+    </a>
+
+    <!-- Admin Portal -->
+    <a href="/admin/login" class="portal-card card-admin">
+      <div class="card-glow"></div>
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">Admin</div>
+      <div class="card-desc">Manage students, upload marks & attendance data from Excel files easily.</div>
+      <ul class="card-features">
+        <li><span>📤</span> Upload marks via Excel/CSV</li>
+        <li><span>📤</span> Upload attendance via Excel/CSV</li>
+        <li><span>👤</span> Add & manage students</li>
+        <li><span>🗄️</span> Database management</li>
+        <li><span>🔐</span> System settings</li>
+      </ul>
+      <button class="card-btn">Enter Admin Portal <span class="arrow">→</span></button>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <p>Built with ❤️ by <span>M. Rakesh Reddy · P. Sushmith Reddy · M. Pavan</span></p>
+    <p style="margin-top:6px">CS (AI & ML) · 3rd Year · Guide: Dr. P. Vamsheedar Reddy</p>
+  </div>
+</div>
+
+<script>
+  // Generate stars
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 150; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 3 + 1;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --dur:${Math.random()*4+2}s; --delay:-${Math.random()*4}s;
+    `;
+    starsEl.appendChild(star);
+  }
+
+  // Floating particles
+  const colors = ['#00D4FF','#7B2FFF','#FF6B35','#FFD700'];
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 6 + 2;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      --dur:${Math.random()*10+6}s; --delay:-${Math.random()*10}s;
+      filter: blur(1px);
+    `;
+    document.body.appendChild(p);
+  }
+</script>
+</body>
+</html>
