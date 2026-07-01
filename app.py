@@ -15,12 +15,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # Configuration
 # ─────────────────────────────────────────────
 DB_CONFIG = {
-    'host': 'mysql-12d3b482-mrakeshreddy5944-2e40.l.aivencloud.com',
-    'port': 26360,
-    'user': 'avnadmin',
-    # 'password':,   
-    'database': 'acadbot_db',
-    'ssl_ca': 'ca.pem',                  # SSL certificate required by Aiven
+    'host': os.getenv('DB_HOST'),
+    'port': int(os.getenv('DB_PORT')),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'database': os.getenv('DB_NAME'),
+    'ssl_ca': 'ca.pem',
     'ssl_disabled': False
 }
 
